@@ -1,0 +1,151 @@
+.admin-wrap {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #fff;
+  font-family: var(--font-body);
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.indicator {
+  width: 3px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.sidebar-header .icon-alarm {
+  color: var(--primary);
+}
+
+.sidebar-title {
+  font-size: 0.85rem;
+  font-family: var(--font-heading);
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0.5rem 0.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  color: var(--primary);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-item:hover {
+  background: var(--secondary-100);
+  color: var(--secondary-700);
+  text-decoration: none;
+}
+
+.nav-item.active {
+  background: var(--secondary-100);
+  color: var(--secondary-700);
+  font-weight: 700;
+}
+
+.nav-item.active .nav-icon {
+  stroke-width: 2.5;
+}
+
+.nav-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  padding: 0.375rem 1.5rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon-muted {
+  color: var(--muted-foreground);
+}
+
+.topbar-muted {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.topbar-sep {
+  color: var(--border);
+}
+
+.topbar-current {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+}
+
+.user-name {
+  font-size: 0.85rem;
+  color: var(--foreground);
+}
+
+.content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow: auto;
+}

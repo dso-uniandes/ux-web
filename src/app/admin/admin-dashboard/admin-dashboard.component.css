@@ -1,0 +1,37 @@
+.dashboard-home {
+  max-width: 960px;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.page-head .indicator {
+  width: 3px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.head-icon {
+  color: var(--primary);
+}
+
+.page-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: var(--font-heading);
+  color: var(--foreground);
+  margin: 0;
+}
+
+.lead {
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  margin: 0;
+  line-height: 1.5;
+}
