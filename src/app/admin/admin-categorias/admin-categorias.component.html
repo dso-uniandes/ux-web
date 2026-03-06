@@ -1,4 +1,82 @@
-<div class="section-placeholder">
-  <h2 class="section-title">Categorias</h2>
-  <p></p>
+<div class="cat-view">
+  <div class="card cat-card">
+    <div class="card-inner">
+      <div class="cat-card-head">
+        <span class="indicator"></span>
+        <h2 class="cat-card-title">Categorias disponibles</h2>
+      </div>
+      <div class="cat-chips-row">
+        <button
+          *ngFor="let c of categories"
+          type="button"
+          class="chip chip-cat"
+          [class.chip-selected]="sel === c.id"
+          (click)="setSel(c.id)"
+        >
+          <app-icon [name]="c.iconName" [size]="14" class="chip-icon"></app-icon>
+          {{ c.label }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card cat-info-card">
+    <div class="card-inner cat-info-inner">
+      <span class="cat-info-text">Seleccionada: {{ selectedCategory?.label }}</span>
+      <span class="cat-info-sep">|</span>
+      <span class="cat-info-state">Estado: Activa</span>
+      <app-icon name="checkCircle" [size]="14" class="cat-info-icon"></app-icon>
+    </div>
+  </div>
+
+  <div class="card cat-add-card">
+    <div class="card-inner">
+      <div class="cat-card-head">
+        <span class="indicator"></span>
+        <h2 class="cat-card-title">Agregar nueva categoria</h2>
+      </div>
+
+      <p class="sl">Nombre de categoria</p>
+      <input
+        type="text"
+        class="input cat-input"
+        placeholder="Ej: Ejercicio, Trabajo..."
+        [(ngModel)]="newCategoryName"
+      />
+
+      <p class="sl">Seleccionar icono</p>
+      <div class="cat-icon-grid">
+        <button
+          *ngFor="let ic of iconGrid"
+          type="button"
+          class="cat-icon-cell"
+          [class.selected]="selectedIcon === ic.key"
+          (click)="selectedIcon = ic.key"
+        >
+          <app-icon [name]="ic.key" [size]="22"></app-icon>
+        </button>
+      </div>
+
+      <div class="cat-add-actions">
+        <button
+          type="button"
+          class="btn btn-primary btn-add-cat"
+          [disabled]="!newCategoryName.trim() || !selectedIcon"
+          (click)="handleAddCategory()"
+        >
+          <app-icon name="plus" [size]="14"></app-icon>
+          Agregar categoria
+        </button>
+        <span *ngIf="selectedIcon" class="chip chip-status">
+          <app-icon name="checkCircle" [size]="12" class="chip-icon"></app-icon>
+          Icono: {{ selectedIconDisplayLabel }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-error cat-error-alert">
+    <app-icon name="xCircle" [size]="14"></app-icon>
+    <span>Estado ejemplo (error): "Nombre de categoria ya existe"</span>
+  </div>
 </div>
