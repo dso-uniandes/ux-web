@@ -34,6 +34,10 @@
   --radius: 0.75rem;
   --font-heading: 'Poppins', sans-serif;
   --font-body: 'Inter', sans-serif;
+  --input-background: #FFFFFF;
+  --context-water-bg: #E8F0F2;
+  --context-medicine-bg: #FDF0F0;
+  --context-plant-bg: #F2F6ED;
 }
 
 * {

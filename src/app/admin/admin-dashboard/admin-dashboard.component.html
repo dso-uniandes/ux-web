@@ -1,8 +1,165 @@
-<div class="dashboard-home">
-  <div class="page-head">
-    <span class="indicator"></span>
-    <svg class="head-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-    <h1 class="page-title">Dashboard</h1>
+<ng-container *ngIf="!isBulkMode">
+  <div class="dashboard-wrap">
+    <div class="dashboard-left">
+      <div class="card search-card">
+        <div class="card-inner search-row">
+          <app-icon name="search" [size]="14" class="icon-muted"></app-icon>
+          <input type="text" class="search-input" placeholder="Buscar por nombre..." [(ngModel)]="alarmSearch" />
+          <span class="sep">|</span>
+          <span class="chip"><app-icon name="heart" [size]="12" class="chip-icon"></app-icon> Categoría: Salud</span>
+          <span class="chip"><app-icon name="checkCircle" [size]="12" class="chip-icon"></app-icon> Estado: ON</span>
+        </div>
+      </div>
+
+      <div class="alarm-list">
+        <p *ngIf="filteredAlarms.length === 0" class="empty-msg">
+          {{ alarmSearch.trim() ? 'Ninguna alarma coincide con la búsqueda.' : 'No hay alarmas.' }}
+        </p>
+        <div
+          *ngFor="let a of filteredAlarms"
+          class="card alarm-card"
+          [class.selected]="a.id === selectedAlarmId"
+          (click)="selectedAlarmId = a.id"
+        >
+          <div class="card-inner alarm-row">
+            <span class="alarm-icon-wrap">
+              <app-dashboard-icon [iconKey]="a.iconKey" [size]="16"></app-dashboard-icon>
+            </span>
+            <span class="alarm-name">{{ a.name }}</span>
+            <app-icon name="clock" [size]="13" class="icon-muted"></app-icon>
+            <span class="alarm-time">{{ a.time }}</span>
+            <app-icon name="refreshCw" [size]="13" class="icon-muted"></app-icon>
+            <span class="alarm-repeat">{{ a.repeat }}</span>
+            <span class="sep">|</span>
+            <span class="alarm-cat">{{ a.category }}</span>
+            <span class="sep">|</span>
+            <span class="chip chip-sm" [class.chip-on]="a.enabled">{{ a.enabled ? 'ON' : 'OFF' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bulk-btn-wrap">
+        <button type="button" class="btn-outline" (click)="isBulkMode = true">
+          <app-icon name="filter" [size]="16"></app-icon>
+          Gestión masiva
+        </button>
+      </div>
+    </div>
+
+    <div class="dashboard-right">
+      <div class="card detail-card">
+        <div class="card-inner">
+          <p class="sl">Detalle (seleccionado)</p>
+          <ng-container *ngIf="selectedAlarm as alarm">
+            <div class="detail-head">
+              <span class="detail-icon"><app-dashboard-icon [iconKey]="alarm.iconKey" [size]="20"></app-dashboard-icon></span>
+              <h2 class="detail-title">{{ alarm.name }}</h2>
+            </div>
+            <div class="detail-meta">
+              <div class="detail-row"><app-icon name="clock" [size]="14" class="icon-muted"></app-icon><span>{{ alarm.time }}</span></div>
+              <div class="detail-row"><app-icon name="refreshCw" [size]="14" class="icon-muted"></app-icon><span>Diario</span></div>
+              <div class="detail-row"><app-icon name="heart" [size]="14" class="icon-muted"></app-icon><span>{{ alarm.category }}</span></div>
+              <div class="detail-row"><app-icon name="home" [size]="14" class="icon-muted"></app-icon><span>Casa (alarma)</span></div>
+            </div>
+            <hr class="detail-divider" />
+            <div class="detail-state">
+              <span>Estado:</span>
+              <span class="chip chip-sm" [class.chip-on]="alarm.enabled">
+                <app-icon [name]="alarm.enabled ? 'checkCircle' : 'xCircle'" [size]="12"></app-icon>
+                {{ alarm.enabled ? 'ON' : 'OFF' }}
+              </span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
   </div>
-  <p class="lead"></p>
+</ng-container>
+
+<ng-container *ngIf="isBulkMode">
+  <div class="bulk-wrap">
+    <div class="card search-card">
+      <div class="card-inner search-row">
+        <app-icon name="filter" [size]="14" class="icon-muted"></app-icon>
+        <span class="filter-label">Filtros:</span>
+        <span class="chip"><app-icon name="home" [size]="12" class="chip-icon"></app-icon> Categoria: Hogar</span>
+        <span class="chip"><app-icon name="xCircle" [size]="12" class="chip-icon"></app-icon> Estado: OFF</span>
+        <span class="chip"><app-icon name="refreshCw" [size]="12" class="chip-icon"></app-icon> Repeticion: L-V</span>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <span class="chip chip-primary"><app-icon name="checkCircle" [size]="13" class="chip-icon chip-icon-primary"></app-icon> Seleccionadas: {{ checked.length }} alarmas</span>
+      <button type="button" class="btn-outline btn-sm" (click)="handleDelete()">Borrar</button>
+      <button type="button" class="btn-outline btn-sm" (click)="openModal()">Cambiar hora</button>
+      <span class="action-hint">Las acciones aplican a las seleccionadas.</span>
+      <span class="spacer"></span>
+      <button type="button" class="btn-text" (click)="exitBulkMode()">Salir</button>
+    </div>
+
+    <div class="card table-header">
+      <div class="card-inner row-header">
+        <label class="checkbox-wrap">
+          <input #selectAllCb type="checkbox" [checked]="allChecked" (change)="toggleAllChecked()" />
+        </label>
+        <span class="col-alarma">Alarma</span>
+        <span class="col-hora">Hora</span>
+        <span class="col-rep">Repeticion</span>
+        <span class="col-cat">Categoria</span>
+        <span class="col-estado">Estado</span>
+      </div>
+    </div>
+
+    <div
+      *ngFor="let a of displayedAlarms"
+      class="card alarm-row-card"
+      [class.selected]="checked.includes(a.id)"
+    >
+      <div class="card-inner alarm-row">
+        <label class="checkbox-wrap"><input type="checkbox" [checked]="checked.includes(a.id)" (change)="toggleChecked(a.id)" (click)="$event.stopPropagation()" /></label>
+        <span class="col-alarma name-cell"><app-dashboard-icon [iconKey]="a.iconKey" [size]="14"></app-dashboard-icon><span>{{ a.name }}</span></span>
+        <span class="col-hora">{{ a.time }}</span>
+        <span class="col-rep">{{ a.repeat }}</span>
+        <span class="col-cat">{{ a.category }}</span>
+        <span class="chip chip-sm col-estado" [class.chip-on]="a.enabled">{{ a.enabled ? 'ON' : 'OFF' }}</span>
+      </div>
+    </div>
+
+    <div class="alerts-row">
+      <div class="alert alert-success">Estado ejemplo (confirmacion): "2 alarmas borradas correctamente"</div>
+      <div class="alert alert-error">Estado ejemplo (error): "No se pudo borrar: 1 alarma esta en proceso"</div>
+    </div>
+  </div>
+</ng-container>
+
+<div class="modal-backdrop" *ngIf="modalOpen" (click)="closeModal()"></div>
+<div class="modal" *ngIf="modalOpen" role="dialog" (click)="$event.stopPropagation()">
+  <header class="modal-header">
+    <span class="indicator"></span>
+    <app-icon name="clock" [size]="18" class="modal-header-icon"></app-icon>
+    <h3 class="modal-title">Cambiar hora</h3>
+  </header>
+  <div class="modal-body">
+    <div class="alert alert-info modal-alert">
+      <app-icon name="alertCircle" [size]="16" class="modal-alert-icon"></app-icon>
+      <span>{{ checked.length }} alarmas seleccionadas</span>
+    </div>
+    <p class="sl">Nueva hora</p>
+    <input type="text" class="input modal-input" [(ngModel)]="newTime" placeholder="8:15 pm" />
+    <p class="sl">Mantener repeticion?</p>
+    <div class="modal-buttons-inline">
+      <button type="button" class="btn btn-modal-toggle" [class.btn-primary]="keepRepeat" [class.btn-outline]="!keepRepeat" (click)="keepRepeat = true">
+        <app-icon name="checkCircle" [size]="14"></app-icon>
+        Sí
+      </button>
+      <button type="button" class="btn btn-modal-toggle" [class.btn-primary]="!keepRepeat" [class.btn-outline]="keepRepeat" (click)="keepRepeat = false">
+        <app-icon name="xCircle" [size]="14"></app-icon>
+        No
+      </button>
+    </div>
+  </div>
+  <footer class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="closeModal()">Aplicar cambios</button>
+    <button type="button" class="btn btn-outline" (click)="closeModal()">Cancelar</button>
+  </footer>
 </div>
