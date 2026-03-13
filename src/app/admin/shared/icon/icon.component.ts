@@ -4,7 +4,7 @@ export type IconName =
   | 'search' | 'droplet' | 'pill' | 'leaf' | 'bookOpen' | 'trash2'
   | 'heart' | 'home' | 'clock' | 'refreshCw' | 'plus' | 'checkCircle' | 'xCircle'
   | 'sun' | 'star' | 'activity' | 'dumbbell' | 'brain' | 'fileText' | 'link' | 'share2' | 'alertCircle'
-  | 'filter';
+  | 'filter' | 'barChart' | 'copy' | 'volume2' | 'vibrate';
 
 @Component({
   selector: 'app-icon',
