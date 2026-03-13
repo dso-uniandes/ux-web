@@ -1,4 +1,312 @@
-<div class="section-placeholder">
-  <h2 class="section-title">Series/Plantillas</h2>
-    <p></p>
+<div class="tab-bar">
+  <div class="tab-group">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-active]="activeTab === 'series'"
+      (click)="activeTab = 'series'"
+    >Series</button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.tab-active]="activeTab === 'plantillas'"
+      (click)="activeTab = 'plantillas'"
+    >Plantillas</button>
+  </div>
+  <button type="button" class="btn-outline btn-new">
+    <app-icon name="plus" [size]="14"></app-icon>
+    {{ activeTab === 'series' ? 'Nueva serie' : 'Nueva plantilla' }}
+  </button>
+</div>
+
+<ng-container *ngIf="activeTab === 'series'">
+  <div class="series-wrap">
+    <div class="series-left">
+      <div class="card builder-card">
+        <div class="card-inner">
+          <div class="builder-head">
+            <span class="indicator"></span>
+            <h2 class="builder-title">Constructor de serie</h2>
+          </div>
+
+          <p class="sl">Nombre de la serie</p>
+          <input type="text" class="input" [(ngModel)]="serieName" />
+
+          <div class="fields-row">
+            <div class="field-half">
+              <p class="sl">Inicio</p>
+              <input type="text" class="input" [(ngModel)]="serieStart" />
+            </div>
+            <div class="field-half">
+              <p class="sl">Frecuencia</p>
+              <input type="text" class="input" [(ngModel)]="serieFrequency" />
+            </div>
+          </div>
+
+          <p class="sl">Pasos (agrega 2-5)</p>
+          <div class="steps-list">
+            <div *ngFor="let s of steps" class="card step-card">
+              <div class="card-inner step-row">
+                <span class="step-num">{{ s.n }}</span>
+                <span class="step-time">{{ s.time }}</span>
+                <span class="step-action">{{ s.action }}</span>
+                <app-icon [name]="s.iconKey" [size]="14" class="icon-muted"></app-icon>
+                <span class="spacer"></span>
+                <span class="step-cat">Categoria: {{ s.category }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="builder-footer">
+            <button type="button" class="btn-outline btn-add-step" (click)="openAddStepModal()">
+              <app-icon name="plus" [size]="14"></app-icon>
+              Agregar paso
+            </button>
+            <span class="chip chip-status">
+              <app-icon name="checkCircle" [size]="12" class="chip-icon-primary"></app-icon>
+              Estado: {{ steps.length }} pasos - ON
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="series-right">
+      <div class="card preview-card">
+        <div class="card-inner">
+          <p class="sl">Vista previa</p>
+
+          <div class="card preview-inner-card">
+            <div class="card-inner">
+              <p class="preview-heading">Proximos {{ steps.length }} disparos:</p>
+              <div *ngFor="let t of previewTriggers" class="preview-trigger">
+                <span class="preview-dot"></span>
+                <span class="preview-trigger-text">{{ t }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card preview-inner-card">
+            <div class="card-inner">
+              <p class="preview-note">Cada paso crea una alarma individual. Puedes editar cada alarma luego desde Dashboard.</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-save" (click)="handleSave()">
+            <app-icon name="checkCircle" [size]="16"></app-icon>
+            Guardar serie
+          </button>
+
+          <div class="alert alert-success">
+            <app-icon name="checkCircle" [size]="14"></app-icon>
+            <span>Feedback: "Serie guardada correctamente"</span>
+          </div>
+          <div class="alert alert-error">
+            <app-icon name="xCircle" [size]="14"></app-icon>
+            <span>Estado ejemplo (error): "Falla hora en el paso 2"</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="activeTab === 'plantillas'">
+  <div class="series-wrap">
+    <div class="series-left">
+      <div class="card builder-card">
+        <div class="card-inner">
+          <div class="builder-head">
+            <span class="indicator"></span>
+            <h2 class="builder-title">Plantilla (defaults)</h2>
+          </div>
+
+          <p class="sl">Nombre de la plantilla</p>
+          <input type="text" class="input" [(ngModel)]="templateName" />
+
+          <p class="sl">Categoria</p>
+          <div class="tpl-chips-row">
+            <button
+              *ngFor="let cat of categoryOptions"
+              type="button"
+              class="chip chip-cat"
+              [class.chip-selected]="templateCategory === cat"
+              (click)="templateCategory = cat"
+            >
+              <app-icon [name]="categoryIcons[cat]" [size]="12" class="chip-cat-icon" [class.chip-cat-icon-selected]="templateCategory === cat"></app-icon>
+              {{ cat }}
+            </button>
+          </div>
+
+          <p class="sl">Otros defaults (se aplican al crear)</p>
+          <div class="tpl-chips-row">
+            <span class="chip chip-default">
+              <app-icon name="volume2" [size]="12" class="chip-icon-muted"></app-icon>
+              Sonido: Suave
+            </span>
+            <span class="chip chip-default">
+              <app-icon name="vibrate" [size]="12" class="chip-icon-muted"></app-icon>
+              Vibracion: ON
+            </span>
+            <span class="chip chip-default">
+              <app-icon name="refreshCw" [size]="12" class="chip-icon-muted"></app-icon>
+              Repeticion: Diario
+            </span>
+          </div>
+
+          <p class="sl">Texto / Nota (microcopy)</p>
+          <textarea class="input tpl-textarea" rows="2" [(ngModel)]="templateNote"></textarea>
+
+          <p class="sl">Icono de la plantilla</p>
+          <div class="icon-grid">
+            <button
+              *ngFor="let ic of iconGrid"
+              type="button"
+              class="icon-cell"
+              [class.selected]="templateIcon === ic.key"
+              (click)="templateIcon = ic.key"
+            >
+              <app-icon [name]="ic.key" [size]="20"></app-icon>
+            </button>
+          </div>
+          <span class="chip chip-status">
+            <app-icon name="checkCircle" [size]="12" class="chip-icon-primary"></app-icon>
+            Estado: Icono seleccionado
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="series-right">
+      <div class="card preview-card">
+        <div class="card-inner">
+          <p class="sl">Vista previa (lo que crea)</p>
+
+          <div class="card preview-inner-card">
+            <div class="card-inner">
+              <p class="preview-heading">Card preview:</p>
+              <p class="tpl-preview-name">{{ templateName }}</p>
+              <div class="tpl-preview-row">
+                <app-icon [name]="categoryIcons[templateCategory]" [size]="11" class="icon-muted"></app-icon>
+                <span class="tpl-preview-detail">Categoria: {{ templateCategory }}</span>
+              </div>
+              <div class="tpl-preview-row">
+                <app-icon name="volume2" [size]="11" class="icon-muted"></app-icon>
+                <span class="tpl-preview-detail">Sonido: Suave</span>
+              </div>
+              <div class="tpl-preview-row">
+                <app-icon name="vibrate" [size]="11" class="icon-muted"></app-icon>
+                <span class="tpl-preview-detail">Vibracion: ON</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card preview-inner-card">
+            <div class="card-inner">
+              <p class="preview-note">Cuando el usuario elija esta plantilla, solo definira: Hora (ej: 7:30 pm) y Repeticion (ej: L-V).</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-save" (click)="handleSaveTemplate()">
+            <app-icon name="checkCircle" [size]="16"></app-icon>
+            Guardar plantilla
+          </button>
+
+          <div class="alert alert-success">
+            <app-icon name="checkCircle" [size]="14"></app-icon>
+            <span>Feedback: "Plantilla guardada"</span>
+          </div>
+          <div class="alert alert-error">
+            <app-icon name="xCircle" [size]="14"></app-icon>
+            <span>Estado ejemplo (error): "Nombre ya existe"</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<div class="modal-backdrop" *ngIf="saveTemplateModalOpen" (click)="closeSaveTemplateModal()"></div>
+<div class="modal modal-sm" *ngIf="saveTemplateModalOpen" role="dialog" (click)="$event.stopPropagation()">
+  <header class="modal-header">
+    <span class="indicator"></span>
+    <app-icon name="checkCircle" [size]="18" class="modal-header-icon"></app-icon>
+    <h3 class="modal-title">Plantilla guardada</h3>
+  </header>
+  <div class="modal-body">
+    <div class="alert alert-success">
+      <app-icon name="checkCircle" [size]="16"></app-icon>
+      <span>Plantilla "{{ templateName }}" guardada correctamente</span>
+    </div>
+  </div>
+  <footer class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="closeSaveTemplateModal()">Cerrar</button>
+  </footer>
+</div>
+
+<div class="modal-backdrop" *ngIf="addStepModalOpen" (click)="closeAddStepModal()"></div>
+<div class="modal" *ngIf="addStepModalOpen" role="dialog" (click)="$event.stopPropagation()">
+  <header class="modal-header">
+    <span class="indicator"></span>
+    <app-icon name="plus" [size]="18" class="modal-header-icon"></app-icon>
+    <h3 class="modal-title">Agregar paso a la serie</h3>
+  </header>
+  <div class="modal-body">
+    <p class="sl">Hora del paso</p>
+    <input type="text" class="input modal-input" [(ngModel)]="newStepTime" placeholder="Ej: 6:50 am" />
+
+    <p class="sl">Nombre de la accion</p>
+    <input type="text" class="input modal-input" [(ngModel)]="newStepAction" placeholder="Ej: Desayuno, Meditar..." />
+
+    <p class="sl">Categoria</p>
+    <div class="modal-chips-row">
+      <button
+        *ngFor="let cat of categoryOptions"
+        type="button"
+        class="chip chip-cat"
+        [class.chip-selected]="newStepCategory === cat"
+        (click)="newStepCategory = cat"
+      >{{ cat }}</button>
+    </div>
+
+    <p class="sl">Icono</p>
+    <div class="icon-grid">
+      <button
+        *ngFor="let ic of iconGrid"
+        type="button"
+        class="icon-cell"
+        [class.selected]="newStepIcon === ic.key"
+        (click)="newStepIcon = ic.key"
+      >
+        <app-icon [name]="ic.key" [size]="20"></app-icon>
+      </button>
+    </div>
+  </div>
+  <footer class="modal-footer">
+    <button type="button" class="btn btn-outline-modal" (click)="closeAddStepModal()">Cancelar</button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="!newStepTime.trim() || !newStepAction.trim() || !newStepIcon"
+      (click)="handleAddStep()"
+    >Agregar paso</button>
+  </footer>
+</div>
+
+<div class="modal-backdrop" *ngIf="saveModalOpen" (click)="closeSaveModal()"></div>
+<div class="modal modal-sm" *ngIf="saveModalOpen" role="dialog" (click)="$event.stopPropagation()">
+  <header class="modal-header">
+    <span class="indicator"></span>
+    <app-icon name="checkCircle" [size]="18" class="modal-header-icon"></app-icon>
+    <h3 class="modal-title">Serie guardada</h3>
+  </header>
+  <div class="modal-body">
+    <div class="alert alert-success">
+      <app-icon name="checkCircle" [size]="16"></app-icon>
+      <span>Serie guardada correctamente</span>
+    </div>
+  </div>
+  <footer class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="closeSaveModal()">Cerrar</button>
+  </footer>
 </div>
