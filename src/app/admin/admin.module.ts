@@ -11,6 +11,7 @@ import { AdminCategoriasComponent } from './admin-categorias/admin-categorias.co
 import { AdminEstadisticasComponent } from './admin-estadisticas/admin-estadisticas.component';
 import { DashboardIconComponent } from './admin-dashboard/dashboard-icon/dashboard-icon.component';
 import { IconComponent } from './shared/icon/icon.component';
+import { IconPatternBackgroundComponent } from './shared/icon-pattern-background.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { IconComponent } from './shared/icon/icon.component';
     AdminEstadisticasComponent,
     DashboardIconComponent,
     IconComponent,
+    IconPatternBackgroundComponent,
   ],
   imports: [CommonModule, FormsModule, AdminRoutingModule, RouterModule],
 })
